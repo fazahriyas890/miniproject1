@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Smart Urban Gardening Assistant</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     * {
       margin: 0;
@@ -21,18 +22,18 @@
       --secondary: #ff9800;
       --accent: #8bc34a;
       --light: #f8fbf8;
-      --dark: #263238;
-      --gray: #78909c;
+      --dark: #333;
+      --gray: #666;
       --danger: #f44336;
       --success: #4caf50;
       --info: #2196f3;
-      --bg-primary: #e0f7fa;
+      --bg-primary: #f0f7f4; /* Updated to a softer green-tinted background for modern feel */
       --bg-secondary: #e8f5e9;
-      --text-primary: #263238;
-      --text-secondary: #78909c;
+      --text-primary: #2c3e50;
+      --text-secondary: #7f8c8d;
       --card-bg: #ffffff;
       --header-bg: linear-gradient(to right, var(--primary), var(--primary-light));
-      --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --shadow: 0 4px 12px rgba(0, 128, 0, 0.1); /* Greener shadow */
     }
 
     .dark-theme {
@@ -47,17 +48,17 @@
       --danger: #e57373;
       --success: #66BB6A;
       --info: #64B5F6;
-      --bg-primary: #121212;
-      --bg-secondary: #1e1e1e;
-      --text-primary: #e0e0e0;
-      --text-secondary: #9e9e9e;
-      --card-bg: #1e1e1e;
+      --bg-primary: #1a2a1a; /* Darker green-tinted background */
+      --bg-secondary: #252f25;
+      --text-primary: #f0f0f0;
+      --text-secondary: #b0b0b0;
+      --card-bg: #2a3a2a;
       --header-bg: linear-gradient(to right, var(--primary-dark), var(--primary));
-      --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      --shadow: 0 4px 12px rgba(0, 50, 0, 0.3);
     }
 
     body {
-      background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+      background: var(--bg-primary);
       color: var(--text-primary);
       min-height: 100vh;
       position: relative;
@@ -67,6 +68,53 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 0 20px;
+    }
+
+    /* Mobile Navigation Styles */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 10px;
+    }
+
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: var(--card-bg);
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+
+    .mobile-nav.active {
+      display: flex;
+    }
+
+    .mobile-nav-item {
+      flex: 1;
+      text-align: center;
+      padding: 12px 5px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.8rem;
+      transition: all 0.3s;
+    }
+
+    .mobile-nav-item.active, .mobile-nav-item:hover {
+      color: var(--primary);
+      background: rgba(76, 175, 80, 0.1);
+    }
+
+    .mobile-nav-item i {
+      display: block;
+      font-size: 1.2rem;
+      margin-bottom: 5px;
     }
 
     /* Header Styles */
@@ -119,6 +167,7 @@
 
     nav a:hover, nav a.active {
       background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05); /* Added subtle hover scale for modern feel */
     }
 
     .header-actions {
@@ -132,6 +181,11 @@
       color: white;
       font-size: 1.2rem;
       cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .notification-btn:hover {
+      transform: rotate(15deg);
     }
 
     .notification-badge {
@@ -158,8 +212,13 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      transition: transform 0.3s ease;
     }
-    
+
+    .user-avatar:hover {
+      transform: scale(1.1);
+    }
+
     .theme-toggle {
       background: rgba(255,255,255,0.2);
       width: 40px;
@@ -171,22 +230,55 @@
       cursor: pointer;
       color: white;
       font-size: 1.2rem;
+      transition: transform 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: rotate(180deg);
     }
 
     /* Page Styles */
-    .page {
-      display: none;
-      padding: 2rem 0;
+    main {
+      position: relative;
       min-height: calc(100vh - 200px);
     }
 
+    .page {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 2rem 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
     .page.active {
-      display: block;
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      position: relative;
+      z-index: 2;
     }
 
     .page-header {
       margin-bottom: 2rem;
       text-align: center;
+      animation: fadeInDown 0.5s ease;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .page-header h2 {
@@ -220,15 +312,16 @@
     /* Form Styles */
     .card {
       background: var(--card-bg);
-      border-radius: 12px;
+      border-radius: 16px; /* Softer corners for modern look */
       box-shadow: var(--shadow);
       padding: 2rem;
       margin-bottom: 2rem;
-      transition: transform 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .card:hover {
       transform: translateY(-5px);
+      box-shadow: 0 8px 24px rgba(0, 128, 0, 0.15); /* Enhanced shadow on hover */
     }
 
     .form-grid {
@@ -253,9 +346,9 @@
     .form-group textarea {
       width: 100%;
       padding: 12px 15px;
-      background: var(--card-bg);
+      background: var(--bg-secondary);
       color: var(--text-primary);
-      border: 2px solid var(--gray);
+      border: 2px solid transparent;
       border-radius: 8px;
       font-size: 1rem;
       transition: all 0.3s ease;
@@ -286,7 +379,7 @@
 
     button:hover {
       background: linear-gradient(to right, var(--primary-dark), var(--primary));
-      transform: translateY(-2px);
+      transform: translateY(-2px) scale(1.02); /* Added scale for modern button effect */
       box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
     }
 
@@ -316,12 +409,17 @@
 
     .stat-card {
       background: var(--card-bg);
-      border-radius: 12px;
+      border-radius: 16px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
       padding: 1.5rem;
       display: flex;
       align-items: center;
       gap: 1rem;
+      transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
     }
 
     .stat-icon {
@@ -334,6 +432,11 @@
       justify-content: center;
       font-size: 1.8rem;
       color: var(--primary);
+      transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover .stat-icon {
+      transform: rotate(360deg);
     }
 
     .stat-info h3 {
@@ -351,11 +454,30 @@
       grid-column: span 2;
       background: linear-gradient(135deg, #64b5f6, #2196f3);
       color: white;
-      border-radius: 12px;
+      border-radius: 16px;
       padding: 1.5rem;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .weather-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+      animation: weatherGlow 5s infinite;
+    }
+
+    @keyframes weatherGlow {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(10%, 10%); }
+      100% { transform: translate(0, 0); }
     }
 
     .weather-current {
@@ -366,6 +488,12 @@
 
     .weather-icon {
       font-size: 3rem;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
 
     .weather-temp {
@@ -391,6 +519,11 @@
       padding: 0.5rem;
       background: rgba(255,255,255,0.2);
       border-radius: 8px;
+      transition: transform 0.3s ease;
+    }
+
+    .forecast-item:hover {
+      transform: scale(1.1);
     }
 
     .forecast-item i {
@@ -400,7 +533,7 @@
 
     .calendar-container {
       background: var(--card-bg);
-      border-radius: 12px;
+      border-radius: 16px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
       padding: 1.5rem;
       margin-bottom: 2rem;
@@ -433,6 +566,7 @@
 
     .calendar-day:hover {
       background: var(--bg-secondary);
+      transform: scale(1.05);
     }
 
     .calendar-day-header {
@@ -472,15 +606,16 @@
 
     .plant-card {
       background: var(--card-bg);
-      border-radius: 12px;
+      border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      transition: transform 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
       position: relative;
     }
 
     .plant-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-5px) rotate(2deg); /* Added slight rotate for dynamic feel */
+      box-shadow: 0 8px 24px rgba(0, 128, 0, 0.15);
     }
 
     .plant-img {
@@ -491,6 +626,23 @@
       justify-content: center;
       font-size: 4rem;
       color: white;
+      position: relative;
+    }
+
+    .plant-img::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.1) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .plant-card:hover .plant-img::after {
+      opacity: 1;
     }
 
     .plant-info {
@@ -531,12 +683,13 @@
       height: 100%;
       background: var(--primary);
       border-radius: 4px;
+      transition: width 1s ease; /* Smooth progress animation */
     }
 
     /* Disease Detection */
     .upload-area {
       border: 3px dashed var(--gray);
-      border-radius: 12px;
+      border-radius: 16px;
       padding: 3rem;
       text-align: center;
       margin-bottom: 2rem;
@@ -548,20 +701,32 @@
     .upload-area:hover {
       border-color: var(--primary);
       background: rgba(76, 175, 80, 0.05);
+      transform: scale(1.02);
     }
 
     .upload-icon {
       font-size: 3rem;
       color: var(--primary);
       margin-bottom: 1rem;
+      transition: transform 0.3s ease;
+    }
+
+    .upload-area:hover .upload-icon {
+      transform: scale(1.2);
     }
 
     .result-card {
       background: var(--card-bg);
-      border-radius: 12px;
+      border-radius: 16px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       padding: 2rem;
       display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .result-header {
@@ -599,6 +764,11 @@
       margin-bottom: 0.8rem;
       padding-left: 1.5rem;
       position: relative;
+      transition: transform 0.3s ease;
+    }
+
+    .solution-list li:hover {
+      transform: translateX(5px);
     }
 
     .solution-list li:before {
@@ -619,6 +789,11 @@
       align-items: center;
       padding: 1rem;
       border-bottom: 1px solid var(--gray);
+      transition: background 0.3s ease;
+    }
+
+    .reminder-item:hover {
+      background: var(--bg-secondary);
     }
 
     .reminder-icon {
@@ -667,7 +842,8 @@
     }
 
     .action-btn:hover {
-      background: var(--gray);
+      background: var(--primary);
+      color: white;
     }
 
     /* Plant Identification */
@@ -680,9 +856,14 @@
 
     .plant-id-card {
       background: var(--card-bg);
-      border-radius: 12px;
+      border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease;
+    }
+
+    .plant-id-card:hover {
+      transform: translateY(-5px);
     }
 
     .plant-id-img {
@@ -735,9 +916,14 @@
 
     .encyclopedia-card {
       background: var(--card-bg);
-      border-radius: 12px;
+      border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease;
+    }
+
+    .encyclopedia-card:hover {
+      transform: translateY(-5px);
     }
 
     .encyclopedia-img {
@@ -797,7 +983,7 @@
 
     .planner-tools {
       background: var(--card-bg);
-      border-radius: 12px;
+      border-radius: 16px;
       padding: 1.5rem;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
@@ -821,6 +1007,7 @@
     .planner-tool:hover {
       border-color: var(--primary);
       background: rgba(76, 175, 80, 0.05);
+      transform: scale(1.05);
     }
 
     .planner-tool i {
@@ -831,7 +1018,7 @@
 
     .planner-area {
       background: var(--bg-secondary);
-      border-radius: 12px;
+      border-radius: 16px;
       min-height: 500px;
       box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
       position: relative;
@@ -860,6 +1047,11 @@
       flex-direction: column;
       align-items: center;
       cursor: move;
+      transition: transform 0.2s ease;
+    }
+
+    .garden-item:hover {
+      transform: scale(1.1);
     }
 
     .garden-item i {
@@ -876,9 +1068,14 @@
 
     .journal-card {
       background: var(--card-bg);
-      border-radius: 12px;
+      border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease;
+    }
+
+    .journal-card:hover {
+      transform: translateY(-5px);
     }
 
     .journal-img {
@@ -911,19 +1108,25 @@
       line-height: 1.6;
       margin-bottom: 1rem;
     }
-    
+
     .journal-tags {
       display: flex;
       gap: 0.5rem;
       flex-wrap: wrap;
     }
-    
+
     .journal-tag {
       background: rgba(139, 195, 74, 0.15);
       color: var(--primary);
       padding: 3px 10px;
       border-radius: 20px;
       font-size: 0.8rem;
+      transition: background 0.3s ease;
+    }
+
+    .journal-tag:hover {
+      background: var(--primary);
+      color: white;
     }
 
     /* Community Forum */
@@ -935,9 +1138,14 @@
 
     .forum-post {
       background: var(--card-bg);
-      border-radius: 12px;
+      border-radius: 16px;
       padding: 1.5rem;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease;
+    }
+
+    .forum-post:hover {
+      transform: translateY(-5px);
     }
 
     .post-header {
@@ -1004,6 +1212,11 @@
       gap: 0.3rem;
       color: var(--text-secondary);
       font-size: 0.9rem;
+      transition: color 0.3s ease;
+    }
+
+    .action-count:hover {
+      color: var(--primary);
     }
 
     /* Footer */
@@ -1108,19 +1321,25 @@
 
     .modal-content {
       background: var(--card-bg);
-      border-radius: 12px;
+      border-radius: 16px;
       max-width: 600px;
       width: 90%;
       max-height: 90vh;
       overflow-y: auto;
       position: relative;
+      animation: modalPop 0.3s ease;
+    }
+
+    @keyframes modalPop {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
 
     .modal-header {
       padding: 1.5rem;
       background: var(--primary);
       color: white;
-      border-radius: 12px 12px 0 0;
+      border-radius: 16px 16px 0 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -1136,12 +1355,17 @@
       color: white;
       font-size: 1.5rem;
       cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .close-modal:hover {
+      transform: rotate(90deg);
     }
 
     .modal-body {
       padding: 1.5rem;
     }
-    
+
     /* Login Page */
     .login-container {
       display: flex;
@@ -1150,7 +1374,7 @@
       min-height: 100vh;
       padding: 2rem;
     }
-    
+
     .login-card {
       background: var(--card-bg);
       border-radius: 16px;
@@ -1160,19 +1384,19 @@
       padding: 3rem;
       text-align: center;
     }
-    
+
     .login-card h2 {
       color: var(--primary);
       margin-bottom: 1.5rem;
     }
-    
+
     .login-options {
       display: flex;
       gap: 1rem;
       justify-content: center;
       margin: 1.5rem 0;
     }
-    
+
     .social-login {
       width: 50px;
       height: 50px;
@@ -1186,45 +1410,286 @@
       cursor: pointer;
       transition: all 0.3s ease;
     }
-    
+
     .social-login:hover {
       transform: translateY(-3px);
     }
-    
+
     .divider {
       display: flex;
       align-items: center;
       margin: 2rem 0;
       color: var(--text-secondary);
     }
-    
+
     .divider::before,
     .divider::after {
       content: '';
       flex: 1;
       border-bottom: 1px solid var(--gray);
     }
-    
+
     .divider span {
       padding: 0 1rem;
     }
-    
+
     .forgot-password {
       display: block;
       margin-top: 1rem;
       color: var(--primary);
       text-decoration: none;
     }
-    
+
     .create-account {
       margin-top: 2rem;
       color: var(--text-secondary);
     }
-    
+
     .create-account a {
       color: var(--primary);
       text-decoration: none;
       font-weight: 600;
+    }
+
+    /* Advanced Features */
+    .ai-suggestions {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .suggestion-item {
+      padding: 0.8rem;
+      border-bottom: 1px solid var(--gray);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: background 0.3s ease;
+    }
+
+    .suggestion-item:hover {
+      background: var(--bg-secondary);
+    }
+
+    .suggestion-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(76, 175, 80, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: var(--primary);
+    }
+
+    .sensor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .sensor-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 1rem;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .sensor-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .sensor-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin: 0.5rem 0;
+    }
+
+    .sensor-status {
+      font-size: 0.9rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      display: inline-block;
+    }
+
+    .status-good {
+      background: rgba(76, 175, 80, 0.15);
+      color: var(--success);
+    }
+
+    .status-warning {
+      background: rgba(255, 152, 0, 0.15);
+      color: var(--secondary);
+    }
+
+    .status-danger {
+      background: rgba(244, 67, 54, 0.15);
+      color: var(--danger);
+    }
+
+    .automation-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .automation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .automation-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .automation-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--gray);
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--primary);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    .history-chart {
+      height: 200px;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      margin-top: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chart-bar {
+      position: absolute;
+      bottom: 0;
+      width: 20px;
+      background: var(--primary);
+      border-radius: 4px 4px 0 0;
+      transition: height 0.5s ease;
+    }
+
+    .ai-analysis {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      background: var(--bg-secondary);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+
+    .ai-icon {
+      font-size: 2rem;
+      color: var(--info);
+    }
+
+    /* Extra Feature: AI Chat Button */
+    .ai-chat-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--primary);
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    .ai-chat-btn:hover {
+      transform: scale(1.1);
+    }
+
+    /* Extra Feature: Progress Tracker in Dashboard */
+    .progress-tracker {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .tracker-item {
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .tracker-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(76, 175, 80, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: var(--primary);
+    }
+
+    .tracker-progress {
+      flex: 1;
+    }
+
+    .tracker-bar {
+      height: 6px;
+      background: var(--bg-secondary);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .tracker-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width 1s ease;
     }
 
     /* Responsive */
@@ -1232,35 +1697,84 @@
       .garden-planner {
         grid-template-columns: 1fr;
       }
-      
+
       .weather-card {
         grid-column: span 1;
       }
     }
 
     @media (max-width: 768px) {
-      .header-content {
-        flex-direction: column;
-        gap: 1rem;
+      .mobile-menu-btn {
+        display: block;
       }
-      
+
       nav ul {
-        gap: 1rem;
-        flex-wrap: wrap;
-        justify-content: center;
+        display: none;
       }
-      
+
+      .header-content {
+        flex-direction: row;
+        gap: 1rem;
+      }
+
+      .logo h1 {
+        font-size: 1.5rem;
+      }
+
       .calendar-grid {
         grid-template-columns: repeat(1, 1fr);
       }
-      
+
       .calendar-day {
         height: auto;
         min-height: 120px;
       }
-      
+
       .login-card {
         padding: 2rem;
+      }
+
+      .header-actions .notification-btn, 
+      .header-actions .theme-toggle {
+        display: none;
+      }
+
+      .mobile-nav {
+        display: flex;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .logo h1 {
+        font-size: 1.2rem;
+      }
+
+      .user-avatar {
+        width: 35px;
+        height: 35px;
+      }
+
+      .page-header h2 {
+        font-size: 1.8rem;
+      }
+
+      .card {
+        padding: 1.5rem;
+      }
+
+      .plant-grid, 
+      .plant-encyclopedia, 
+      .plant-id-results, 
+      .journal-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .weather-card {
+        grid-template-columns: 1fr;
+      }
+
+      .weather-forecast {
+        grid-template-columns: repeat(3, 1fr);
       }
     }
   </style>
@@ -1273,10 +1787,10 @@
         <i class="fas fa-seedling"></i>
         <h1>Smart Urban Gardening</h1>
       </div>
-      
+
       <h2>Welcome to Your Garden Assistant</h2>
       <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Sign in to manage your urban garden</p>
-      
+
       <form id="loginForm">
         <div class="form-group">
           <input type="email" id="loginEmail" placeholder="Email Address" required>
@@ -1288,13 +1802,13 @@
           <i class="fas fa-sign-in-alt"></i> Sign In
         </button>
       </form>
-      
+
       <a href="#" class="forgot-password">Forgot your password?</a>
-      
+
       <div class="divider">
         <span>or continue with</span>
       </div>
-      
+
       <div class="login-options">
         <div class="social-login" style="color: #DB4437;">
           <i class="fab fa-google"></i>
@@ -1306,7 +1820,7 @@
           <i class="fab fa-twitter"></i>
         </div>
       </div>
-      
+
       <div class="create-account">
         Don't have an account? <a href="#" id="show-app">Continue without account</a>
       </div>
@@ -1318,6 +1832,9 @@
     <!-- Header -->
     <header>
       <div class="container header-content">
+        <button class="mobile-menu-btn">
+          <i class="fas fa-bars"></i>
+        </button>
         <div class="logo">
           <i class="fas fa-seedling"></i>
           <h1>Smart Urban Gardening</h1>
@@ -1349,6 +1866,46 @@
         </div>
       </div>
     </header>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav">
+      <a href="#" class="mobile-nav-item active" data-page="dashboard">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="#" class="mobile-nav-item" data-page="garden-setup">
+        <i class="fas fa-seedling"></i>
+        <span>My Garden</span>
+      </a>
+      <a href="#" class="mobile-nav-item" data-page="plant-encyclopedia">
+        <i class="fas fa-book"></i>
+        <span>Library</span>
+      </a>
+      <a href="#" class="mobile-nav-item" data-page="disease-detection">
+        <i class="fas fa-heartbeat"></i>
+        <span>Health</span>
+      </a>
+      <a href="#" class="mobile-nav-item" data-page="plant-id">
+        <i class="fas fa-camera"></i>
+        <span>Plant ID</span>
+      </a>
+      <a href="#" class="mobile-nav-item" data-page="reminders">
+        <i class="fas fa-bell"></i>
+        <span>Reminders</span>
+      </a>
+      <a href="#" class="mobile-nav-item" data-page="garden-planner">
+        <i class="fas fa-ruler-combined"></i>
+        <span>Planner</span>
+      </a>
+      <a href="#" class="mobile-nav-item" data-page="garden-journal">
+        <i class="fas fa-book-open"></i>
+        <span>Journal</span>
+      </a>
+      <a href="#" class="mobile-nav-item" data-page="community">
+        <i class="fas fa-users"></i>
+        <span>Community</span>
+      </a>
+    </div>
 
     <!-- Main Content -->
     <main class="container">
@@ -1422,32 +1979,139 @@
           </div>
         </div>
 
-        <div class="calendar-container">
-          <div class="calendar-header">
-            <button><i class="fas fa-chevron-left"></i></button>
-            <h3>August 2025</h3>
-            <button><i class="fas fa-chevron-right"></i></button>
+        <!-- Extra Feature: Progress Tracker -->
+        <div class="page-header">
+          <h2>Garden Progress Tracker</h2>
+          <p>Monitor your gardening milestones</p>
+        </div>
+
+        <div class="progress-tracker">
+          <div class="tracker-item">
+            <div class="tracker-icon"><i class="fas fa-seedling"></i></div>
+            <div class="tracker-progress">
+              <div class="progress-label">
+                <span>Plant Growth</span>
+                <span>75%</span>
+              </div>
+              <div class="tracker-bar">
+                <div class="tracker-fill" style="width: 75%;"></div>
+              </div>
+            </div>
           </div>
-          <div class="calendar-grid">
-            <div class="calendar-day-header">Mon</div>
-            <div class="calendar-day-header">Tue</div>
-            <div class="calendar-day-header">Wed</div>
-            <div class="calendar-day-header">Thu</div>
-            <div class="calendar-day-header">Fri</div>
-            <div class="calendar-day-header">Sat</div>
-            <div class="calendar-day-header">Sun</div>
-            
-            <!-- Sample days -->
-            <div class="calendar-day"></div>
-            <div class="calendar-day"></div>
-            <div class="calendar-day">
-              <span class="day-number">1</span>
-              <div class="event">Water Tomatoes</div>
+
+          <div class="tracker-item">
+            <div class="tracker-icon"><i class="fas fa-apple-alt"></i></div>
+            <div class="tracker-progress">
+              <div class="progress-label">
+                <span>Harvest Readiness</span>
+                <span>60%</span>
+              </div>
+              <div class="tracker-bar">
+                <div class="tracker-fill" style="width: 60%;"></div>
+              </div>
             </div>
-            <div class="calendar-day">
-              <span class="day-number">2</span>
+          </div>
+
+          <div class="tracker-item">
+            <div class="tracker-icon"><i class="fas fa-leaf"></i></div>
+            <div class="tracker-progress">
+              <div class="progress-label">
+                <span>Pest Control</span>
+                <span>90%</span>
+              </div>
+              <div class="tracker-bar">
+                <div class="tracker-fill" style="width: 90%;"></div>
+              </div>
             </div>
-            <!-- Add more days as needed -->
+          </div>
+        </div>
+
+        <!-- Advanced Feature: Sensor Data -->
+        <div class="page-header">
+          <h2>Garden Sensors</h2>
+          <p>Real-time monitoring of your garden environment</p>
+        </div>
+
+        <div class="sensor-grid">
+          <div class="sensor-card">
+            <i class="fas fa-thermometer-half" style="font-size: 2rem; color: var(--danger);"></i>
+            <h3>Temperature</h3>
+            <div class="sensor-value">24.5°C</div>
+            <div class="sensor-status status-good">Optimal</div>
+          </div>
+
+          <div class="sensor-card">
+            <i class="fas fa-tint" style="font-size: 2rem; color: var(--info);"></i>
+            <h3>Soil Moisture</h3>
+            <div class="sensor-value">42%</div>
+            <div class="sensor-status status-warning">Low</div>
+          </div>
+
+          <div class="sensor-card">
+            <i class="fas fa-sun" style="font-size: 2rem; color: var(--secondary);"></i>
+            <h3>Light Intensity</h3>
+            <div class="sensor-value">78%</div>
+            <div class="sensor-status status-good">Optimal</div>
+          </div>
+
+          <div class="sensor-card">
+            <i class="fas fa-wind" style="font-size: 2rem; color: var(--primary);"></i>
+            <h3>Humidity</h3>
+            <div class="sensor-value">65%</div>
+            <div class="sensor-status status-good">Optimal</div>
+          </div>
+        </div>
+
+        <!-- Advanced Feature: AI Suggestions -->
+        <div class="page-header">
+          <h2>AI Recommendations</h2>
+          <p>Smart suggestions based on your garden data</p>
+        </div>
+
+        <div class="ai-suggestions">
+          <div class="suggestion-item">
+            <div class="suggestion-icon">
+              <i class="fas fa-tint"></i>
+            </div>
+            <div>
+              <h4>Water Tomatoes</h4>
+              <p>Soil moisture is low for tomato plants. Water immediately for optimal growth.</p>
+            </div>
+          </div>
+
+          <div class="suggestion-item">
+            <div class="suggestion-icon">
+              <i class="fas fa-cloud-sun"></i>
+            </div>
+            <div>
+              <h4>Move Basil to Shade</h4>
+              <p>High light intensity detected. Move basil plants to partial shade.</p>
+            </div>
+          </div>
+
+          <div class="suggestion-item">
+            <div class="suggestion-icon">
+              <i class="fas fa-seedling"></i>
+            </div>
+            <div>
+              <h4>Fertilize Peppers</h4>
+              <p>It's time to fertilize your pepper plants for better yield.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Feature: Plant Health History -->
+        <div class="page-header">
+          <h2>Plant Health History</h2>
+          <p>Track changes in your plant health over time</p>
+        </div>
+
+        <div class="automation-card">
+          <div class="automation-header">
+            <h3>Health Trend Analysis</h3>
+          </div>
+          <div class="history-chart" id="health-chart">
+            <!-- Chart bars will be generated by JS -->
           </div>
         </div>
       </section>
@@ -1506,7 +2170,48 @@
               </div>
             </div>
           </div>
-          <!-- Add more plant cards -->
+
+          <div class="plant-card">
+            <div class="plant-img"><i class="fas fa-leaf"></i></div>
+            <div class="plant-info">
+              <h3>Basil</h3>
+              <p>Needs more sunlight</p>
+              <div class="progress-container">
+                <div class="progress-label">
+                  <span>Health</span>
+                  <span>75%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 75%;"></div>
+                </div>
+              </div>
+              <div class="plant-meta">
+                <span>Planted: Jun 15</span>
+                <span>Water: Every 2 days</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="plant-card">
+            <div class="plant-img"><i class="fas fa-pepper-hot"></i></div>
+            <div class="plant-info">
+              <h3>Pepper</h3>
+              <p>Ready for harvest</p>
+              <div class="progress-container">
+                <div class="progress-label">
+                  <span>Health</span>
+                  <span>95%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 95%;"></div>
+                </div>
+              </div>
+              <div class="plant-meta">
+                <span>Planted: May 20</span>
+                <span>Water: Every 3 days</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1533,7 +2238,24 @@
               <span class="confidence">95% Match</span>
             </div>
           </div>
-          <!-- Add more results -->
+
+          <div class="plant-id-card">
+            <div class="plant-id-img"><i class="fas fa-leaf"></i></div>
+            <div class="plant-id-info">
+              <h4>Mint</h4>
+              <p>Aromatic herb for teas and dishes</p>
+              <span class="confidence">87% Match</span>
+            </div>
+          </div>
+
+          <div class="plant-id-card">
+            <div class="plant-id-img"><i class="fas fa-leaf"></i></div>
+            <div class="plant-id-info">
+              <h4>Parsley</h4>
+              <p>Culinary herb for garnishes</p>
+              <span class="confidence">78% Match</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1585,7 +2307,36 @@
               </div>
             </div>
           </div>
-          <!-- Add more encyclopedia cards -->
+
+          <div class="encyclopedia-card">
+            <div class="encyclopedia-img"><i class="fas fa-leaf"></i></div>
+            <div class="encyclopedia-info">
+              <span class="plant-type">Herb</span>
+              <h3>Basil</h3>
+              <p>Aromatic herb perfect for sunny windowsills</p>
+              <div class="plant-stats">
+                <div class="stat-item"><i class="fas fa-sun"></i> Partial Sun</div>
+                <div class="stat-item"><i class="fas fa-tint"></i> Regular</div>
+                <div class="stat-item"><i class="fas fa-ruler"></i> 45cm</div>
+                <div class="stat-item"><i class="fas fa-clock"></i> 60 days</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="encyclopedia-card">
+            <div class="encyclopedia-img"><i class="fas fa-apple-alt"></i></div>
+            <div class="encyclopedia-info">
+              <span class="plant-type">Fruit</span>
+              <h3>Strawberry</h3>
+              <p>Compact fruit plant for vertical gardens</p>
+              <div class="plant-stats">
+                <div class="stat-item"><i class="fas fa-sun"></i> Full Sun</div>
+                <div class="stat-item"><i class="fas fa-tint"></i> Regular</div>
+                <div class="stat-item"><i class="fas fa-ruler"></i> 20cm</div>
+                <div class="stat-item"><i class="fas fa-clock"></i> 90 days</div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1612,12 +2363,32 @@
             </div>
           </div>
           <p>Fungal infection common in humid conditions. Affects photosynthesis.</p>
+
+          <div class="ai-analysis">
+            <div class="ai-icon"><i class="fas fa-robot"></i></div>
+            <div>
+              <h4>AI Analysis</h4>
+              <p>Based on your plant's history and current conditions, we recommend immediate treatment.</p>
+            </div>
+          </div>
+
           <h4>Recommended Solutions</h4>
           <ul class="solution-list">
             <li>Remove affected leaves</li>
-            <li>Apply fungicide spray</li>
-            <li>Improve air circulation</li>
+            <li>Apply fungicide spray every 3 days</li>
+            <li>Improve air circulation around plants</li>
+            <li>Reduce watering frequency</li>
+            <li>Apply neem oil as preventive measure</li>
           </ul>
+
+          <div class="form-group" style="margin-top: 1.5rem;">
+            <label>Schedule Treatment Reminder</label>
+            <div style="display: flex; gap: 1rem;">
+              <input type="date" style="flex: 1;">
+              <input type="time" style="flex: 1;">
+              <button class="btn-secondary"><i class="fas fa-bell"></i> Set</button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1645,6 +2416,7 @@
                 <option>None</option>
                 <option>Tomato</option>
                 <option>Basil</option>
+                <option>Pepper</option>
               </select>
             </div>
             <button type="submit"><i class="fas fa-bell"></i> Set Reminder</button>
@@ -1667,7 +2439,38 @@
               <div class="action-btn"><i class="fas fa-trash"></i></div>
             </div>
           </div>
-          <!-- Add more reminders -->
+
+          <div class="reminder-item">
+            <div class="reminder-icon"><i class="fas fa-seedling"></i></div>
+            <div class="reminder-info">
+              <h4>Fertilize Basil</h4>
+              <div class="reminder-meta">
+                <span>Tomorrow, 9:00 AM</span>
+                <span>Basil Plant</span>
+              </div>
+            </div>
+            <div class="reminder-actions">
+              <div class="action-btn"><i class="fas fa-check"></i></div>
+              <div class="action-btn"><i class="fas fa-edit"></i></div>
+              <div class="action-btn"><i class="fas fa-trash"></i></div>
+            </div>
+          </div>
+
+          <div class="reminder-item">
+            <div class="reminder-icon"><i class="fas fa-cut"></i></div>
+            <div class="reminder-info">
+              <h4>Harvest Peppers</h4>
+              <div class="reminder-meta">
+                <span>Aug 15, 11:00 AM</span>
+                <span>Pepper Plant</span>
+              </div>
+            </div>
+            <div class="reminder-actions">
+              <div class="action-btn"><i class="fas fa-check"></i></div>
+              <div class="action-btn"><i class="fas fa-edit"></i></div>
+              <div class="action-btn"><i class="fas fa-trash"></i></div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1707,7 +2510,19 @@
                 <p>Fence</p>
               </div>
             </div>
-            <button class="btn-secondary" style="margin-top: 1rem; width: 100%;"><i class="fas fa-save"></i> Save Layout</button>
+
+            <div style="margin-top: 1.5rem;">
+              <h3>Automated Suggestions</h3>
+              <p>Based on your plant selections, we recommend:</p>
+              <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                <li>Place tomatoes in full sun areas</li>
+                <li>Group herbs together for efficient watering</li>
+                <li>Allow 30cm spacing between pepper plants</li>
+              </ul>
+            </div>
+
+            <button class="btn-secondary" style="margin-top: 1.5rem; width: 100%;"><i class="fas fa-save"></i> Save Layout</button>
+            <button class="btn-info" style="margin-top: 0.5rem; width: 100%;"><i class="fas fa-download"></i> Export Plan</button>
           </div>
 
           <div class="planner-area" id="plannerArea">
@@ -1716,14 +2531,14 @@
           </div>
         </div>
       </section>
-      
+
       <!-- Garden Journal Page -->
       <section id="garden-journal" class="page">
         <div class="page-header">
           <h2>Garden Journal</h2>
           <p>Record your gardening journey and track progress</p>
         </div>
-        
+
         <div class="card">
           <h3>New Journal Entry</h3>
           <form id="journalForm">
@@ -1732,46 +2547,46 @@
                 <label for="entryTitle"><i class="fas fa-heading"></i> Title</label>
                 <input type="text" id="entryTitle" placeholder="e.g., Tomato Harvest Day" required>
               </div>
-              
+
               <div class="form-group">
                 <label for="entryDate"><i class="fas fa-calendar"></i> Date</label>
                 <input type="date" id="entryDate" required>
               </div>
             </div>
-            
+
             <div class="form-group">
               <label for="entryContent"><i class="fas fa-edit"></i> Notes</label>
               <textarea id="entryContent" rows="4" placeholder="Describe your gardening activities, observations, and learnings..." required></textarea>
             </div>
-            
+
             <div class="form-group">
               <label for="entryTags"><i class="fas fa-tags"></i> Tags (comma separated)</label>
               <input type="text" id="entryTags" placeholder="e.g., tomatoes, harvest, success">
             </div>
-            
+
             <div class="form-group">
               <label for="entryImage"><i class="fas fa-camera"></i> Upload Photo</label>
               <input type="file" id="entryImage" accept="image/*">
             </div>
-            
+
             <button type="submit">
               <i class="fas fa-book"></i> Save Journal Entry
             </button>
           </form>
         </div>
-        
+
         <div class="page-header">
           <h2>Your Journal Entries</h2>
           <p>Review your gardening history and insights</p>
         </div>
-        
+
         <div class="journal-grid">
           <div class="journal-card">
             <div class="journal-img">
               <i class="fas fa-apple-alt"></i>
             </div>
             <div class="journal-content">
-              <div class="journal-date">August 8, 2023</div>
+              <div class="journal-date">August 8, 2025</div>
               <h3>First Tomato Harvest</h3>
               <p>Harvested our first batch of tomatoes today! The plants are producing well despite the heat. Noticed some minor leaf curling on the lower branches.</p>
               <div class="journal-tags">
@@ -1781,13 +2596,13 @@
               </div>
             </div>
           </div>
-          
+
           <div class="journal-card">
             <div class="journal-img">
               <i class="fas fa-seedling"></i>
             </div>
             <div class="journal-content">
-              <div class="journal-date">August 5, 2023</div>
+              <div class="journal-date">August 5, 2025</div>
               <h3>Planted New Herb Garden</h3>
               <p>Created a new vertical herb garden on the balcony. Planted basil, mint, rosemary, and thyme. Used a new organic potting mix that seems to drain well.</p>
               <div class="journal-tags">
@@ -1797,13 +2612,13 @@
               </div>
             </div>
           </div>
-          
+
           <div class="journal-card">
             <div class="journal-img">
               <i class="fas fa-bug"></i>
             </div>
             <div class="journal-content">
-              <div class="journal-date">August 2, 2023</div>
+              <div class="journal-date">August 2, 2025</div>
               <h3>Aphid Problem Solved</h3>
               <p>Found aphids on the pepper plants. Applied a neem oil solution and introduced ladybugs. The infestation seems to be under control now.</p>
               <div class="journal-tags">
@@ -1815,7 +2630,7 @@
           </div>
         </div>
       </section>
-      
+
       <!-- Community Page -->
       <section id="community" class="page">
         <div class="page-header">
@@ -1853,11 +2668,12 @@
             </div>
             <div class="post-content">
               <h3>Best Plants for Small Apartments</h3>
-              <p>Sharing my experience with low-light plants that thrive indoors...</p>
+              <p>Sharing my experience with low-light plants that thrive indoors. Pothos, snake plants, and ZZ plants have been the most resilient in my north-facing apartment...</p>
             </div>
             <div class="post-tags">
               <span class="post-tag">Apartments</span>
               <span class="post-tag">Indoor</span>
+              <span class="post-tag">Low Light</span>
             </div>
             <div class="post-actions">
               <div class="action-count"><i class="fas fa-heart"></i> 15</div>
@@ -1865,7 +2681,30 @@
               <div class="action-count"><i class="fas fa-share"></i> 3</div>
             </div>
           </div>
-          <!-- Add more posts -->
+
+          <div class="forum-post">
+            <div class="post-header">
+              <div class="post-avatar"><i class="fas fa-user"></i></div>
+              <div class="post-meta">
+                <div class="post-author">UrbanGardener</div>
+                <div class="post-date">5 hours ago</div>
+              </div>
+            </div>
+            <div class="post-content">
+              <h3>Automated Watering Systems</h3>
+              <p>Has anyone set up an automated watering system for their balcony garden? Looking for recommendations for a system that can handle 10-15 plants...</p>
+            </div>
+            <div class="post-tags">
+              <span class="post-tag">Automation</span>
+              <span class="post-tag">Watering</span>
+              <span class="post-tag">Tech</span>
+            </div>
+            <div class="post-actions">
+              <div class="action-count"><i class="fas fa-heart"></i> 7</div>
+              <div class="action-count"><i class="fas fa-comment"></i> 12</div>
+              <div class="action-count"><i class="fas fa-share"></i> 2</div>
+            </div>
+          </div>
         </div>
       </section>
     </main>
@@ -1958,58 +2797,115 @@
         </div>
       </div>
     </div>
+
+    <!-- Extra Feature: AI Chat Button -->
+    <div class="ai-chat-btn" title="Ask AI Gardening Assistant">
+      <i class="fas fa-robot"></i>
+    </div>
   </div>
 <script>
   // Theme toggle functionality
   const themeToggle = document.getElementById('theme-toggle');
   const themeIcon = themeToggle.querySelector('i');
-  
+
   themeToggle.addEventListener('click', () => {
     document.body.classList.toggle('dark-theme');
-    
+
     if (document.body.classList.contains('dark-theme')) {
       themeIcon.className = 'fas fa-sun';
+      localStorage.setItem('theme', 'dark');
     } else {
       themeIcon.className = 'fas fa-moon';
+      localStorage.setItem('theme', 'light');
     }
   });
+
+  // Check saved theme preference
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark-theme');
+    themeIcon.className = 'fas fa-sun';
+  }
 
   // Login functionality
   const showAppBtn = document.getElementById('show-app');
   const loginPage = document.getElementById('login-page');
   const appContainer = document.getElementById('app-container');
-  
+
   showAppBtn.addEventListener('click', (e) => {
     e.preventDefault();
     loginPage.style.display = 'none';
     appContainer.style.display = 'block';
   });
 
-  // Navigation between pages
+  // Navigation between pages with modern transition
+  function navigateToPage(pageId) {
+    const currentPage = document.querySelector('.page.active');
+    const newPage = document.getElementById(pageId);
+
+    if (currentPage) {
+      currentPage.classList.remove('active');
+    }
+
+    // Update active link
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll('.mobile-nav-item').forEach(l => l.classList.remove('active'));
+    document.querySelector(`.nav-link[data-page="${pageId}"]`)?.classList.add('active');
+    document.querySelector(`.mobile-nav-item[data-page="${pageId}"]`)?.classList.add('active');
+
+    // Show the selected page with delay for transition
+    setTimeout(() => {
+      newPage.classList.add('active');
+    }, 100);
+
+    // Close mobile menu if open
+    document.querySelector('.mobile-menu-btn i').className = 'fas fa-bars';
+    document.querySelector('.mobile-nav').classList.remove('active');
+
+    // Initialize page-specific features
+    if (pageId === 'dashboard') {
+      initHealthChart();
+    }
+  }
+
   document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', function(e) {
       e.preventDefault();
-      
-      // Update active link
-      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-      this.classList.add('active');
-      
-      // Show the selected page
-      const pageId = this.getAttribute('data-page');
-      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-      document.getElementById(pageId).classList.add('active');
+      navigateToPage(this.getAttribute('data-page'));
     });
+  });
+
+  document.querySelectorAll('.mobile-nav-item').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      navigateToPage(this.getAttribute('data-page'));
+    });
+  });
+
+  // Mobile menu toggle
+  const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+  mobileMenuBtn.addEventListener('click', () => {
+    const icon = mobileMenuBtn.querySelector('i');
+    const mobileNav = document.querySelector('.mobile-nav');
+
+    if (icon.classList.contains('fa-bars')) {
+      icon.className = 'fas fa-times';
+      mobileNav.classList.add('active');
+    } else {
+      icon.className = 'fas fa-bars';
+      mobileNav.classList.remove('active');
+    }
   });
 
   // Journal form submission
   document.getElementById('journalForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    
+
     const title = document.getElementById('entryTitle').value;
     const date = document.getElementById('entryDate').value;
     const content = document.getElementById('entryContent').value;
     const tags = document.getElementById('entryTags').value.split(',').map(tag => tag.trim());
-    
+
     // Format date
     const dateObj = new Date(date);
     const formattedDate = dateObj.toLocaleDateString('en-US', { 
@@ -2017,7 +2913,7 @@
       month: 'long', 
       day: 'numeric' 
     });
-    
+
     // Create journal card
     const journalGrid = document.querySelector('.journal-grid');
     const newEntry = document.createElement('div');
@@ -2035,13 +2931,13 @@
         </div>
       </div>
     `;
-    
+
     // Add to top of grid
     journalGrid.prepend(newEntry);
-    
+
     // Reset form
     this.reset();
-    
+
     // Show success message
     alert('Journal entry added successfully!');
   });
@@ -2055,10 +2951,10 @@
   // Plant Encyclopedia Filtering (simple type filter)
   const plantTypeFilter = document.getElementById('plantType');
   const plants = document.querySelectorAll('.encyclopedia-card');
-  
+
   plantTypeFilter.addEventListener('change', () => {
     const selectedType = plantTypeFilter.value;
-    
+
     plants.forEach(plant => {
       if (selectedType === 'All Plants' || plant.querySelector('.plant-type').textContent === selectedType) {
         plant.style.display = 'block';
@@ -2205,9 +3101,17 @@
   // Allow moving existing items
   plannerArea.addEventListener('drop', (e) => {
     if (e.dataTransfer.getData('text/plain') === 'move') {
-      const item = document.querySelector('.garden-item[draggable="true"]'); // Simplified for single item, enhance for multiple
-      item.style.left = `${e.offsetX - item.dataset.offsetX}px`;
-      item.style.top = `${e.offsetY - item.dataset.offsetY}px`;
+      const items = plannerArea.querySelectorAll('.garden-item');
+      let movingItem;
+      items.forEach(it => {
+        if (it.draggable) { // Find the one being dragged, but since dragstart sets draggable, assume last one for simplicity
+          movingItem = it;
+        }
+      });
+      if (movingItem) {
+        movingItem.style.left = `${e.offsetX - movingItem.dataset.offsetX}px`;
+        movingItem.style.top = `${e.offsetY - movingItem.dataset.offsetY}px`;
+      }
     }
   });
 
@@ -2255,86 +3159,107 @@
     });
   });
 
-  // NEW: Weather API Integration
-  // Replace 'YOUR_API_KEY' with your actual OpenWeatherMap API key
-  const API_KEY = 'YOUR_API_KEY';
-  const weatherCurrent = document.querySelector('.weather-current');
-  const weatherTemp = weatherCurrent.querySelector('.weather-temp');
-  const weatherLocation = weatherCurrent.querySelector('.weather-location');
-  const weatherDesc = weatherCurrent.querySelector('p');
-  const weatherIcon = weatherCurrent.querySelector('.weather-icon');
-  const weatherForecast = document.querySelector('.weather-forecast');
+  // Initialize health chart
+  function initHealthChart() {
+    const chartContainer = document.getElementById('health-chart');
+    chartContainer.innerHTML = '';
 
-  async function fetchWeather(lat, lon) {
-    try {
-      // Fetch current weather
-      const currentRes = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
-      const currentData = await currentRes.json();
-      
-      weatherTemp.textContent = `${Math.round(currentData.main.temp)}°C`;
-      weatherLocation.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${currentData.name}`;
-      weatherDesc.textContent = currentData.weather[0].description;
-      weatherIcon.className = `fas fa-${getWeatherIcon(currentData.weather[0].main)} weather-icon`;
+    // Sample health data for the last 7 days
+    const healthData = [85, 87, 82, 80, 84, 88, 90];
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const maxValue = Math.max(...healthData);
 
-      // Fetch 3-day forecast (using one-call API for simplicity; note: free tier limits)
-      const forecastRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&cnt=3`);
-      const forecastData = await forecastRes.json();
+    days.forEach((day, index) => {
+      const bar = document.createElement('div');
+      bar.className = 'chart-bar';
+      bar.style.height = `0px`; // Start from 0 for animation
+      bar.style.left = `${20 + index * 30}px`;
 
-      weatherForecast.innerHTML = ''; // Clear static forecast
-      forecastData.list.forEach((day, index) => {
-        const forecastItem = document.createElement('div');
-        forecastItem.className = 'forecast-item';
-        const dayName = new Date(day.dt * 1000).toLocaleDateString('en-US', { weekday: 'short' });
-        forecastItem.innerHTML = `
-          <p>${index === 0 ? 'Tomorrow' : dayName}</p>
-          <i class="fas fa-${getWeatherIcon(day.weather[0].main)}"></i>
-          <p>${Math.round(day.main.temp)}°C</p>
-        `;
-        weatherForecast.appendChild(forecastItem);
-      });
-    } catch (error) {
-      console.error('Weather fetch error:', error);
-      // Fallback to static data if API fails
-      weatherTemp.textContent = '28°C';
-      weatherLocation.innerHTML = '<i class="fas fa-map-marker-alt"></i> Your City';
-      weatherDesc.textContent = 'Sunny with clear skies';
-      weatherIcon.className = 'fas fa-sun weather-icon';
-    }
+      const label = document.createElement('div');
+      label.textContent = day;
+      label.style.position = 'absolute';
+      label.style.bottom = '-25px';
+      label.style.left = '50%';
+      label.style.transform = 'translateX(-50%)';
+      label.style.color = 'var(--text-secondary)';
+
+      const value = document.createElement('div');
+      value.textContent = `${healthData[index]}%`;
+      value.style.position = 'absolute';
+      value.style.top = '-25px';
+      value.style.left = '50%';
+      value.style.transform = 'translateX(-50%)';
+      value.style.color = 'var(--text-secondary)';
+
+      bar.appendChild(value);
+      bar.appendChild(label);
+      chartContainer.appendChild(bar);
+
+      // Animate bar height
+      setTimeout(() => {
+        bar.style.height = `${(healthData[index] / maxValue) * 180}px`;
+      }, 100 * index);
+    });
   }
 
-  // Helper to map weather condition to Font Awesome icon
-  function getWeatherIcon(condition) {
-    const icons = {
-      Clear: 'sun',
-      Clouds: 'cloud',
-      Rain: 'cloud-rain',
-      Drizzle: 'cloud-rain',
-      Thunderstorm: 'bolt',
-      Snow: 'snowflake',
-      Mist: 'smog'
-    };
-    return icons[condition] || 'cloud';
-  }
+  // Simulate sensor data updates
+  function updateSensorData() {
+    const sensors = [
+      { id: 'temperature', min: 15, max: 35 },
+      { id: 'moisture', min: 20, max: 80 },
+      { id: 'light', min: 30, max: 100 },
+      { id: 'humidity', min: 40, max: 90 }
+    ];
 
-  // Get user location and fetch weather on load
-  window.addEventListener('load', () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => fetchWeather(position.coords.latitude, position.coords.longitude),
-        (error) => {
-          console.error('Geolocation error:', error);
-          // Default to a sample location (e.g., New York) if permission denied
-          fetchWeather(40.7128, -74.0060);
+    sensors.forEach((sensor, index) => {
+      const valueElement = document.querySelectorAll('.sensor-value')[index];
+      const statusElement = document.querySelectorAll('.sensor-status')[index];
+
+      // Generate random value within range
+      const value = Math.floor(Math.random() * (sensor.max - sensor.min)) + sensor.min;
+      valueElement.textContent = sensor.id === 'temperature' ? `${value}°C` : `${value}%`;
+
+      // Update status
+      let status = 'status-good';
+      let statusText = 'Optimal';
+
+      if (sensor.id === 'temperature') {
+        if (value < 18 || value > 30) {
+          status = value < 18 ? 'status-warning' : 'status-danger';
+          statusText = value < 18 ? 'Low' : 'High';
         }
-      );
-    } else {
-      // Fallback if geolocation not supported
-      fetchWeather(40.7128, -74.0060);
+      } else if (sensor.id === 'moisture') {
+        if (value < 30) {
+          status = 'status-danger';
+          statusText = 'Low';
+        } else if (value < 40) {
+          status = 'status-warning';
+          statusText = 'Low';
+        }
+      }
+
+      statusElement.className = `sensor-status ${status}`;
+      statusElement.textContent = statusText;
+    });
+  }
+
+  // Update sensor data every 5 seconds
+  setInterval(updateSensorData, 5000);
+  updateSensorData(); // Initial update
+
+  // Initialize health chart on dashboard
+  document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('dashboard').classList.contains('active')) {
+      initHealthChart();
     }
   });
 
-  // More functionality can be added here for other features
+  // AI Chat Button (simulated alert for demo)
+  const aiChatBtn = document.querySelector('.ai-chat-btn');
+  aiChatBtn.addEventListener('click', () => {
+    alert('AI Gardening Assistant: How can I help with your garden today?');
+  });
 </script>
-  
+
 </body>
 </html>
